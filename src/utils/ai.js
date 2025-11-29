@@ -32,6 +32,12 @@ export const getBestMove = (board, aiPlayer, difficulty, isAdvancedMode = false,
             depthLimit = 3;
     }
 
+    // In advanced mode, limit depth even for Hard to prevent excessive computation
+    // because the search space grows exponentially with piece removal/placement
+    if (isAdvancedMode && depthLimit > 6) {
+        depthLimit = 6;
+    }
+
     // Apply randomness
     if (Math.random() < randomChance) {
         const randomIndex = Math.floor(Math.random() * availableMoves.length);

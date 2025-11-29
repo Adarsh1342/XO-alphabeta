@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 
-const Menu = ({ onStart, onAdvancedToggle }) => {
+const Menu = ({ onStart, onAdvancedToggle, isAdvanced = false }) => {
     const [mode, setMode] = useState(null);
     const [difficulty, setDifficulty] = useState('Medium');
-    const [isAdvanced, setIsAdvanced] = useState(false);
 
     const handleAdvancedToggle = (checked) => {
-        setIsAdvanced(checked);
         if (onAdvancedToggle) {
             onAdvancedToggle(checked);
         }

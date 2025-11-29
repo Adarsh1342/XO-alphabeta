@@ -23,7 +23,11 @@ function App() {
   return (
     <div className={`app-container ${isAdvanced ? 'advanced-mode' : ''}`}>
       {!gameMode ? (
-        <Menu onStart={handleStartGame} onAdvancedToggle={handleAdvancedToggle} />
+        <Menu
+          onStart={handleStartGame}
+          onAdvancedToggle={handleAdvancedToggle}
+          isAdvanced={isAdvanced}
+        />
       ) : (
         <Game mode={gameMode} difficulty={difficulty} onBack={handleBackToMenu} />
       )}
