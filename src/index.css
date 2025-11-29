@@ -1,9 +1,9 @@
 :root {
   --bg-color: #1a1a2e;
-  --text-color: #e94560;
+  --text-color: #c03546;
   --accent-color: #16213e;
   --highlight-color: #0f3460;
-  --x-color: #e94560;
+  --x-color: #c03546;
   --o-color: #4cc9f0;
   --font-family: 'Inter', sans-serif;
 }
@@ -18,6 +18,7 @@ body {
   align-items: center;
   min-height: 100vh;
   overflow: hidden;
+  transition: background-color 0.6s ease-in-out;
 }
 
 .app-container {
@@ -25,6 +26,45 @@ body {
   width: 100%;
   max-width: 500px;
   padding: 20px;
+  transition: all 0.6s ease-in-out;
+}
+
+/* Advanced Mode - Reversed Color Palette */
+.app-container.advanced-mode {
+  --bg-color: #c03546;
+  --text-color: #4cc9f0;
+  --accent-color: #a82d3e;
+  --highlight-color: #b03242;
+  --x-color: #4cc9f0;
+  --o-color: #1a1a2e;
+}
+
+/* Change body background for advanced mode */
+body:has(.app-container.advanced-mode) {
+  background-color: #c03546;
+}
+
+.app-container.advanced-mode .menu h1 {
+  color: var(--x-color);
+  text-shadow: 0 0 10px rgba(76, 201, 240, 0.5);
+}
+
+.app-container.advanced-mode .menu button {
+  background: #1a1a2e;
+}
+
+.app-container.advanced-mode .menu button:hover {
+  background: #0f1a2e;
+  box-shadow: 0 6px 12px rgba(26, 26, 46, 0.6);
+}
+
+/* Add transitions to all color-based elements */
+.menu,
+.game-container,
+.board,
+.square,
+button {
+  transition: background-color 0.6s ease-in-out, color 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
 }
 
 button {
@@ -50,7 +90,62 @@ button {
   margin-bottom: 40px;
 }
 
-.menu-options, .difficulty-options {
+/* Advanced Mode Toggle */
+.advanced-toggle {
+  margin-bottom: 20px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+  display: none;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background: var(--accent-color);
+  border-radius: 15px;
+  transition: background 0.3s;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: #888;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.toggle-label input[type="checkbox"]:checked+.toggle-slider {
+  background: var(--o-color);
+}
+
+.toggle-label input[type="checkbox"]:checked+.toggle-slider::before {
+  transform: translateX(24px);
+  background: white;
+}
+
+.toggle-text {
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 500;
+}
+
+.menu-options,
+.difficulty-options {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -59,15 +154,16 @@ button {
 .menu button {
   padding: 15px 30px;
   font-size: 1.2rem;
-  background: var(--accent-color);
+  background: var(--x-color);
   color: white;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .menu button:hover {
-  background: var(--highlight-color);
+  background: #a82d3e;
   transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(192, 53, 70, 0.4);
 }
 
 .difficulty-options button.selected {
@@ -95,6 +191,18 @@ button {
 .status {
   font-size: 1.5rem;
   font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mode-badge {
+  font-size: 0.8rem;
+  background: var(--o-color);
+  color: var(--bg-color);
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-weight: bold;
 }
 
 .back-btn-small {
@@ -117,7 +225,7 @@ button {
   background: var(--accent-color);
   padding: 10px 20px;
   border-radius: 50px;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .player-btn {
@@ -135,11 +243,16 @@ button {
 
 .player-btn.active {
   background: white;
-  box-shadow: 0 0 10px rgba(255,255,255,0.5);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-.x-btn.active { color: var(--x-color); }
-.o-btn.active { color: var(--o-color); }
+.x-btn.active {
+  color: var(--x-color);
+}
+
+.o-btn.active {
+  color: var(--o-color);
+}
 
 .vs {
   font-weight: bold;
@@ -154,7 +267,7 @@ button {
   background: var(--accent-color);
   padding: 10px;
   border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .square {
@@ -173,8 +286,13 @@ button {
   background: var(--highlight-color);
 }
 
-.square.x { color: var(--x-color); }
-.square.o { color: var(--o-color); }
+.square.x {
+  color: var(--x-color);
+}
+
+.square.o {
+  color: var(--o-color);
+}
 
 .square.winning {
   background: rgba(255, 255, 255, 0.1);
@@ -196,17 +314,37 @@ button {
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
 }

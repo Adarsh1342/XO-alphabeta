@@ -1,24 +1,42 @@
 import React, { useState } from 'react';
 
-const Menu = ({ onStart }) => {
+const Menu = ({ onStart, onAdvancedToggle }) => {
     const [mode, setMode] = useState(null);
     const [difficulty, setDifficulty] = useState('Medium');
+    const [isAdvanced, setIsAdvanced] = useState(false);
 
-    const handleModeSelect = (selectedMode) => {
-        setMode(selectedMode);
-        if (selectedMode === '2P') {
-            onStart(selectedMode, null);
+    const handleAdvancedToggle = (checked) => {
+        setIsAdvanced(checked);
+        if (onAdvancedToggle) {
+            onAdvancedToggle(checked);
         }
     };
 
-    const handleStart1P = () => {
-        onStart('1P', difficulty);
+    const handleModeSelect = (selectedMode) => {
+        const finalMode = isAdvanced ? `${selectedMode}-ADV` : selectedMode;
+        setMode(selectedMode);
+        if (selectedMode === '2P') {
+            onStart(finalMode, null);
+        }
     };
 
     if (!mode) {
         return (
             <div className="menu">
                 <h1>XO Game</h1>
+
+                <div className="advanced-toggle">
+                    <label className="toggle-label">
+                        <input
+                            type="checkbox"
+                            checked={isAdvanced}
+                            onChange={(e) => handleAdvancedToggle(e.target.checked)}
+                        />
+                        <span className="toggle-slider"></span>
+                        <span className="toggle-text">Advanced Mode</span>
+                    </label>
+                </div>
+
                 <div className="menu-options">
                     <button onClick={() => handleModeSelect('1P')}>One Player</button>
                     <button onClick={() => handleModeSelect('2P')}>Two Players</button>
@@ -36,7 +54,10 @@ const Menu = ({ onStart }) => {
                         <button
                             key={level}
                             className={difficulty === level ? 'selected' : ''}
-                            onClick={() => onStart('1P', level)}
+                            onClick={() => {
+                                const finalMode = isAdvanced ? '1P-ADV' : '1P';
+                                onStart(finalMode, level);
+                            }}
                         >
                             {level}
                         </button>

@@ -3,8 +3,9 @@ import Menu from './components/Menu';
 import Game from './components/Game';
 
 function App() {
-  const [gameMode, setGameMode] = useState(null); // '1P' or '2P'
+  const [gameMode, setGameMode] = useState(null);
   const [difficulty, setDifficulty] = useState('Medium');
+  const [isAdvanced, setIsAdvanced] = useState(false);
 
   const handleStartGame = (mode, diff) => {
     setGameMode(mode);
@@ -15,10 +16,14 @@ function App() {
     setGameMode(null);
   };
 
+  const handleAdvancedToggle = (advanced) => {
+    setIsAdvanced(advanced);
+  };
+
   return (
-    <div className="app-container">
+    <div className={`app-container ${isAdvanced ? 'advanced-mode' : ''}`}>
       {!gameMode ? (
-        <Menu onStart={handleStartGame} />
+        <Menu onStart={handleStartGame} onAdvancedToggle={handleAdvancedToggle} />
       ) : (
         <Game mode={gameMode} difficulty={difficulty} onBack={handleBackToMenu} />
       )}

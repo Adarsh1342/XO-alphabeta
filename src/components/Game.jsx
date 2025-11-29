@@ -6,20 +6,27 @@ import { getBestMove } from '../utils/ai';
 
 const Game = ({ mode, difficulty, onBack }) => {
     const [board, setBoard] = useState(Array(9).fill(null));
-    const [currentPlayer, setCurrentPlayer] = useState('X'); // 'X' always starts first in game logic
-    const [userPlayer, setUserPlayer] = useState('X'); // In 1P, user can choose X or O
-    const [winner, setWinner] = useState(null); // 'X', 'O', 'Draw', or null
+    const [currentPlayer, setCurrentPlayer] = useState('X');
+    const [userPlayer, setUserPlayer] = useState('X');
+    const [winner, setWinner] = useState(null);
     const [winningLine, setWinningLine] = useState(null);
     const [gameStarted, setGameStarted] = useState(false);
+
+    // For advanced mode: track move history for each player
+    const [moveHistory, setMoveHistory] = useState({ X: [], O: [] });
+
+    const isAdvancedMode = mode === '1P-ADV' || mode === '2P-ADV';
+    const is1PMode = mode === '1P' || mode === '1P-ADV';
 
     // Reset game
     const resetGame = () => {
         setBoard(Array(9).fill(null));
         setCurrentPlayer('X');
-        setUserPlayer('X'); // Reset user preference so they can choose again
+        setUserPlayer('X');
         setWinner(null);
         setWinningLine(null);
         setGameStarted(false);
+        setMoveHistory({ X: [], O: [] });
     };
 
     // Handle click
@@ -27,15 +34,30 @@ const Game = ({ mode, difficulty, onBack }) => {
         if (winner || board[i]) return;
 
         // In 1P mode, prevent click if it's AI's turn
-        if (mode === '1P' && currentPlayer !== userPlayer) return;
+        if (is1PMode && currentPlayer !== userPlayer) return;
 
         makeMove(i);
     };
 
     const makeMove = (i) => {
         const newBoard = [...board];
+        const newMoveHistory = {
+            X: [...moveHistory.X],
+            O: [...moveHistory.O]
+        };
+
+        // In advanced mode, if player already has 3 pieces, remove the oldest
+        if (isAdvancedMode && newMoveHistory[currentPlayer].length >= 3) {
+            const oldestMove = newMoveHistory[currentPlayer].shift();
+            newBoard[oldestMove] = null;
+        }
+
+        // Place new move
         newBoard[i] = currentPlayer;
+        newMoveHistory[currentPlayer].push(i);
+
         setBoard(newBoard);
+        setMoveHistory(newMoveHistory);
         setGameStarted(true);
 
         const result = checkWinner(newBoard);
@@ -49,24 +71,21 @@ const Game = ({ mode, difficulty, onBack }) => {
 
     // AI Turn
     useEffect(() => {
-        if (mode === '1P' && !winner && currentPlayer !== userPlayer) {
-            // AI's turn
+        if (is1PMode && !winner && currentPlayer !== userPlayer) {
             const timer = setTimeout(() => {
-                const move = getBestMove(board, currentPlayer, difficulty);
+                const move = getBestMove(board, currentPlayer, difficulty, isAdvancedMode, moveHistory);
                 if (move !== -1) {
                     makeMove(move);
                 }
-            }, 500); // Delay for realism
+            }, 500);
             return () => clearTimeout(timer);
         }
-    }, [currentPlayer, winner, mode, userPlayer, board, difficulty]);
+    }, [currentPlayer, winner, is1PMode, userPlayer, board, difficulty]);
 
     // Handle player selection in 1P mode before game starts
     const handleSelectPlayer = (player) => {
         if (!gameStarted) {
             setUserPlayer(player);
-            // If user chooses O, X (AI) must start. 
-            // Current player is already X. AI effect will trigger because currentPlayer (X) !== userPlayer (O).
         }
     };
 
@@ -75,9 +94,10 @@ const Game = ({ mode, difficulty, onBack }) => {
             <div className="header">
                 <button className="back-btn-small" onClick={onBack}>Menu</button>
                 <div className="status">
+                    {isAdvancedMode && <div className="mode-badge">Advanced Mode</div>}
                     {winner ? (
                         winner === 'Draw' ? "It's a Draw!" : (
-                            mode === '1P' ? (
+                            is1PMode ? (
                                 winner === userPlayer ? "User Wins!" : "AI Wins!"
                             ) : (
                                 `Winner: ${winner}`
